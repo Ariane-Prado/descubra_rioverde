@@ -100,11 +100,11 @@ def _tabela(registros: List[dict], curta: bool = False) -> str:
             linhas.append(f"{r['id']} | {r['nome']} | {r['categoria']} | {r['dias_funcionamento']} | "
                           f"{r['horario_abertura']}-{r['horario_fechamento']} | {str(r['descricao'])[:50]}")
         return "\n".join(linhas)
-    linhas = ["id | nome | categoria | dias | horário | visita (min) | como chegar | descrição"]
+    linhas = ["id | nome | categoria | dias | horário | visita (min) | bairro | transporte | descrição"]
     for r in registros:
         linhas.append(f"{r['id']} | {r['nome']} | {r['categoria']} | {r['dias_funcionamento']} | "
                       f"{r['horario_abertura']}-{r['horario_fechamento']} | "
-                      f"{r['duracao_visita_min']} | {r['acesso_texto']} | {str(r['descricao'])[:100]}")
+                      f"{r['duracao_visita_min']} | {r['bairro'] or '—'} | {r['acesso_texto'] or '—'} | {str(r['descricao'])[:100]}")
     return "\n".join(linhas)
 
 
@@ -236,9 +236,10 @@ def gerar_roteiro_com_agentes(base: BaseAtrativos, perfil: Perfil,
     for b in blocos:
         for p in b.paradas:
             r = base.obter(p.atrativo_id)
+            extra_acesso = f" | {p.acesso_texto}" if p.acesso_texto else ""
             fatos.append(f"Dia {b.dia} ({b.dia_semana}), {b.periodo_nome}: {p.atrativo_id} {p.nome} "
                          f"{p.horario_chegada}-{p.horario_saida} | funciona {r['dias_funcionamento']} "
-                         f"{r['horario_abertura']}-{r['horario_fechamento']} | {p.acesso_texto}")
+                         f"{r['horario_abertura']}-{r['horario_fechamento']}{extra_acesso}")
 
     # ---- 3. Verificador (Chain-of-Verification)
     saida_verif = _rodar(

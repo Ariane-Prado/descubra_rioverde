@@ -98,7 +98,7 @@ export default function App() {
       <aside className="painel">
         <div className="logo"><Logo />Descubra Rio Verde</div>
         <h1 className="chamada">Descubra<br />Rio Verde<span>do seu jeito.</span></h1>
-        <p className="apoio">Conte o que você gosta e quanto tempo tem na cidade. Montamos um roteiro sob medida, com horários e como chegar em cada lugar.</p>
+        <p className="apoio">Conte o que você gosta e quanto tempo tem na cidade. Montamos um roteiro sob medida, com horários e trajeto entre as paradas.</p>
         <div className="cidade">
           <Cidade />
           <p>Igreja de São Sebastião, casarões históricos, Cristo Redentor, lavouras e as abóboras gigantes.</p>
@@ -197,7 +197,7 @@ function Resultado({ resposta, perfil, dia, setDia, voltar }) {
         <dl className="resumo">
           <div><dt>Quando</dt><dd>{roteiro.blocos.length ? `${primeiro.dia_semana}${dias.length > 1 ? ` + ${dias.length - 1} dia${dias.length > 2 ? 's' : ''}` : ''}, ${quando}` : '—'}</dd></div>
           <div><dt>Paradas</dt><dd>{roteiro.total_paradas} {roteiro.total_paradas === 1 ? 'lugar' : 'lugares'}</dd></div>
-          <div><dt>Como chegar</dt><dd>{roteiro.paradas_com_carro === 0 ? 'Tudo de aplicativo ou a pé'
+          <div><dt>Transporte</dt><dd>{roteiro.paradas_com_carro === 0 ? 'Sem paradas que exigem carro'
             : `${roteiro.paradas_com_carro} ${roteiro.paradas_com_carro === 1 ? 'parada precisa' : 'paradas precisam'} de carro`}</dd></div>
         </dl>
         <div className="botoes">
@@ -233,8 +233,12 @@ function Resultado({ resposta, perfil, dia, setDia, voltar }) {
                     <div className="cat">{p.categoria_nome}{p.refeicao === 'almoco' ? ', com almoço' : p.refeicao === 'jantar' ? ', com jantar' : ''}</div>
                     <p>{p.motivo && p.motivo.length > 25 ? p.motivo : p.descricao}</p>
                     <div className="meta">
-                      <span><Icone nome="local" tamanho={16} />{p.bairro || `${p.distancia_centro_km} km do centro`}</span>
-                      <span className={p.acesso === 'carro' ? 'carro' : ''}><Icone nome={p.acesso} tamanho={16} />{p.acesso_texto}</span>
+                      {(p.bairro || p.endereco) && (
+                        <span><Icone nome="local" tamanho={16} />{p.bairro || p.endereco}</span>
+                      )}
+                      {p.acesso === 'carro' && (
+                        <span className="carro"><Icone nome="carro" tamanho={16} />{p.acesso_texto}</span>
+                      )}
                       <a href={linkGoogle(p)} target="_blank" rel="noreferrer">
                         {p.nota_google != null
                           ? <><Icone nome="estrela" tamanho={15} preenchido />{p.nota_google.toLocaleString('pt-BR')}{p.total_avaliacoes ? ` (${p.total_avaliacoes.toLocaleString('pt-BR')})` : ''} no Google</>

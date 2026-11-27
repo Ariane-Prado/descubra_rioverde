@@ -57,7 +57,7 @@ A planilha pode ser editada no Google Sheets ou no Excel e exportada como **CSV 
 | `duracao_visita_min` | sim | Duração média estimada da visita, em minutos |
 | `endereco`, `bairro` | não | Ex.: `Rua X, 123 · Centro` |
 | `tags` | não | Palavras-chave separadas por vírgula (`pôr do sol`, `crianças`, `música ao vivo`…). Locais com a tag **`pôr do sol`** são priorizados no fim da tarde |
-| `precisa_carro` | não | `sim` para forçar a indicação. Se vazio, o sistema calcula pela distância até o centro (> 8 km indica necessidade de carro) |
+| `precisa_carro` | não | `sim` para locais afastados ou em zona rural que exigem carro |
 | `serve_refeicao` | não | `almoco` ou `jantar` (evita sugerir outro restaurante em seguida quando o local já oferece refeição) |
 | `nota_google`, `total_avaliacoes` | não | Avaliação no Google Maps (ex.: `4.7` e `820`) |
 | `fonte`, `verificado_em` | não | Origem da informação e data da última conferência |

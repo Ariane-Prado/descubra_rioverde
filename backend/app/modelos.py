@@ -57,9 +57,8 @@ class Parada(BaseModel):
     deslocamento_min: int = 0
     deslocamento_texto: str = ""
     refeicao: str = ""
-    acesso: str = ""          # carro | aplicativo | a_pe
+    acesso: str = ""          # "carro" quando marcado na planilha
     acesso_texto: str = ""
-    distancia_centro_km: float = 0
     motivo: str = ""
     nota_google: Optional[float] = None
     total_avaliacoes: Optional[int] = None

@@ -69,10 +69,10 @@ def test_atrativo_inventado_e_ignorado():
     assert [p.atrativo_id for p in blocos[0].paradas] == ["106"]
 
 
-def test_como_chegar():
-    assert base.obter("101")["acesso"] == "carro"        # cachoeira marcada "precisa de carro"
-    assert base.obter("104")["acesso"] == "a_pe"         # sorveteria no centro
-    assert base.obter("102")["acesso"] == "aplicativo"   # pesque-pague perto da cidade
+def test_precisa_carro():
+    assert base.obter("101")["acesso"] == "carro"   # cachoeira marcada "precisa de carro"
+    assert base.obter("104")["acesso"] == ""        # lugar sem marcação não presume distância do centro
+    assert "distancia_centro_km" not in base.obter("104")
 
 
 def test_pesque_pague_serve_almoco_sem_outro_restaurante_na_manha():

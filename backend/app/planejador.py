@@ -175,7 +175,7 @@ def _parada(r: dict, ordem: int, chegada: int, saida: int, desloc: int, desloc_t
         horario_chegada=para_hhmm(chegada), horario_saida=para_hhmm(saida), duracao_min=saida - chegada,
         deslocamento_min=desloc, deslocamento_texto=desloc_txt,
         refeicao=refeicao, acesso=r["acesso"], acesso_texto=r["acesso_texto"],
-        distancia_centro_km=r["distancia_centro_km"], motivo=motivo,
+        motivo=motivo,
         nota_google=r["nota_google"], total_avaliacoes=r["total_avaliacoes"],
         latitude=r["latitude"], longitude=r["longitude"], utilidade=util or {},
     )
@@ -197,7 +197,7 @@ def montar_roteiro(blocos: List[Bloco], titulo: str, resumo: str, verificacoes: 
                              "Tente outro dia da semana ou outro período.")
     if com_carro:
         nomes = ", ".join(p.nome for p in com_carro)
-        avisos.insert(0, f"Precisa de carro para: {nomes}. Os demais lugares dá para ir de aplicativo.")
+        avisos.insert(0, f"Precisa de carro para: {nomes}.")
     return Roteiro(titulo=titulo, resumo=resumo, blocos=blocos, total_paradas=len(paradas),
                    paradas_com_carro=len(com_carro), verificacoes=verificacoes,
                    avisos=list(dict.fromkeys(avisos)))

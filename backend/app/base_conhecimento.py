@@ -29,11 +29,6 @@ OPCIONAIS = ["endereco", "bairro", "tags", "precisa_carro", "serve_refeicao", "n
 
 DIAS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
 
-# Centro de Rio Verde (Praça da Matriz, aproximado). Pode ser ajustado no .env.
-CENTRO = (float(os.getenv("CENTRO_LAT", "-17.7923")), float(os.getenv("CENTRO_LON", "-50.9192")))
-LIMITE_CARRO_KM = float(os.getenv("LIMITE_CARRO_KM", "8"))   # mais longe que isso do centro: precisa de carro
-RAIO_CENTRO_KM = float(os.getenv("RAIO_CENTRO_KM", "1.2"))   # até aqui: "no centro, dá para ir a pé"
-
 
 def normalizar(texto: str) -> str:
     """Minúsculas e sem acentos, para a busca não depender de 'música' x 'musica'."""
@@ -120,7 +115,6 @@ class BaseAtrativos:
             r["total_avaliacoes"] = int(total) if total is not None else None
             r["dias"] = ler_dias(r["dias_funcionamento"])
             r["serve_refeicao"] = normalizar(r["serve_refeicao"])
-            r["distancia_centro_km"] = round(distancia_km(*CENTRO, lat, lon) / 1.3, 1)
             r["acesso"], r["acesso_texto"] = self._acesso(r)
             registros.append(r)
         if self.incompletos:
@@ -137,12 +131,9 @@ class BaseAtrativos:
 
     @staticmethod
     def _acesso(r: dict) -> tuple[str, str]:
-        marcado = normalizar(r.get("precisa_carro", ""))
-        if marcado.startswith("s") or (not marcado and r["distancia_centro_km"] > LIMITE_CARRO_KM):
+        if normalizar(r.get("precisa_carro", "")).startswith("s"):
             return "carro", "Precisa de carro"
-        if r["distancia_centro_km"] <= RAIO_CENTRO_KM:
-            return "a_pe", "No centro, dá para ir a pé"
-        return "aplicativo", "Dá para ir de aplicativo"
+        return "", ""
 
     # ---------- consultas ----------
     def todos(self) -> List[Dict]:
