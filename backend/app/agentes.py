@@ -67,7 +67,7 @@ def _ids_no_texto(texto: str, validos: List[str]) -> List[str]:
     """Encontra, na ordem em que aparecem, os ids de atrativos citados pelo modelo."""
     achados: List[str] = []
     for token in re.findall(r"\b\d{1,4}\b", texto):
-        for candidato in (token, token.zfill(3)):
+        for candidato in (token, token.zfill(3), token.lstrip("0") or "0"):
             if candidato in validos and candidato not in achados:
                 achados.append(candidato)
                 break
@@ -260,7 +260,10 @@ def gerar_roteiro_com_agentes(base: BaseAtrativos, perfil: Perfil,
     final = _json_no_texto(saida_verif)
     no_roteiro = {p.atrativo_id for b in blocos for p in b.paradas}
     remover = {str(i).strip() for i in final.get("remover", []) or []}
-    remover = ({i.zfill(3) if i.isdigit() else i for i in remover}) & no_roteiro
+    expandido = set()
+    for i in remover:
+        expandido.update({i, i.zfill(3), i.lstrip("0") or "0"} if i.isdigit() else {i})
+    remover = expandido & no_roteiro
     # Proteção contra um verificador confuso: o código já garante horário e dia.
     # Modelo local: a remoção é ignorada. Gemini: aceita, mas nunca mais que metade das paradas.
     if local or len(remover) > len(no_roteiro) // 2:

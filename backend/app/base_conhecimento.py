@@ -114,7 +114,8 @@ class BaseAtrativos:
             total = _numero(r["total_avaliacoes"])
             r["total_avaliacoes"] = int(total) if total is not None else None
             r["dias"] = ler_dias(r["dias_funcionamento"])
-            r["serve_refeicao"] = normalizar(r["serve_refeicao"])
+            ref = normalizar(r["serve_refeicao"])
+            r["serve_refeicao"] = "" if ref in ("", "nao", "n", "false", "0") else ref
             r["acesso"], r["acesso_texto"] = self._acesso(r)
             registros.append(r)
         if self.incompletos:

@@ -23,10 +23,10 @@ def todas(roteiro):
     return [p for b in roteiro["blocos"] for p in b["paradas"]]
 
 
-def test_saude_e_lugares_incompletos():
+def test_saude_e_base_completa():
     r = cliente.get("/api/saude").json()
-    assert r["ok"] and r["atrativos"] > 0
-    assert "Domah" in r["incompletos"]  # lugar real ainda sem coordenadas e horários
+    assert r["ok"] and r["atrativos"] >= 100
+    assert r["incompletos"] == []
 
 
 def test_dias_da_semana():
@@ -60,24 +60,25 @@ def test_cada_parada_esta_aberta_no_dia_e_horario():
 def test_lugar_que_fecha_no_domingo_nao_entra():
     perfil = Perfil(interesses=["historia"], dia_semana="dom", periodos=["manha"])
     ids = [p.atrativo_id for b in planejar_offline(base, perfil).blocos for p in b.paradas]
-    assert "108" not in ids  # museu de exemplo funciona de terça a sábado
+    assert "30" not in ids and "34" not in ids  # casarões históricos funcionam de segunda a sexta
 
 
 def test_atrativo_inventado_e_ignorado():
     perfil = Perfil(interesses=["historia"], dia_semana="sex", periodos=["manha"])
-    blocos, _ = agendar(base, perfil, ["999", "106"])
-    assert [p.atrativo_id for p in blocos[0].paradas] == ["106"]
+    blocos, _ = agendar(base, perfil, ["999", "27"])
+    assert [p.atrativo_id for p in blocos[0].paradas] == ["27"]
 
 
 def test_precisa_carro():
-    assert base.obter("101")["acesso"] == "carro"   # cachoeira marcada "precisa de carro"
-    assert base.obter("104")["acesso"] == ""        # lugar sem marcação não presume distância do centro
-    assert "distancia_centro_km" not in base.obter("104")
+    assert base.obter("1")["acesso"] == "carro"    # cachoeira marcada "precisa de carro"
+    assert base.obter("27")["acesso"] == ""        # igreja no centro sem marcação de carro
+    assert base.obter("27")["serve_refeicao"] == ""  # "nao" na planilha não deve contar como refeição
+    assert "distancia_centro_km" not in base.obter("27")
 
 
 def test_pesque_pague_serve_almoco_sem_outro_restaurante_na_manha():
     perfil = Perfil(interesses=["pesca", "gastronomia"], dia_semana="sex", periodos=["manha"])
-    blocos, _ = agendar(base, perfil, ["102", "112"])
+    blocos, _ = agendar(base, perfil, ["6", "76"])
     refeicoes = [p for p in blocos[0].paradas if p.refeicao]
     assert len(refeicoes) == 1
 
@@ -96,10 +97,10 @@ def test_sem_ia_disponivel_cai_no_plano_b():
 
 
 def test_avisa_interesse_que_nao_coube():
-    # o barzinho de exemplo só abre à noite: pedido só à tarde deve avisar
-    r = cliente.post("/api/roteiro", json={"interesses": ["barzinho"], "dia_semana": "qui", "periodos": ["tarde"],
+    # casas noturnas não abrem pela manhã: pedido só de manhã deve avisar
+    r = cliente.post("/api/roteiro", json={"interesses": ["vida_noturna"], "dia_semana": "sex", "periodos": ["manha"],
                                            "modo": "offline"}).json()["roteiro"]
-    assert any("Barzinho e violão" in a for a in r["avisos"])
+    assert any("Vida noturna" in a for a in r["avisos"])
 
 
 def test_titulo_com_dia_errado_e_trocado():

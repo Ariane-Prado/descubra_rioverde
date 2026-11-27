@@ -226,7 +226,7 @@ function Resultado({ resposta, perfil, dia, setDia, voltar }) {
                   <div className="hora"><b>{p.horario_chegada}</b><span>até {p.horario_saida}</span></div>
                   <div className="info">
                     <h3>{p.nome}</h3>
-                    <div className="cat">{p.categoria_nome}{p.refeicao === 'almoco' ? ', com almoço' : p.refeicao === 'jantar' ? ', com jantar' : ''}</div>
+                    <div className="cat">{p.categoria_nome}{p.refeicao === 'almoco' ? ', com almoço' : p.refeicao === 'jantar' ? ', com jantar' : p.refeicao === 'almoco_e_jantar' ? ', com almoço e jantar' : ''}</div>
                     <p>{p.motivo && p.motivo.length > 25 ? p.motivo : p.descricao}</p>
                     <div className="meta">
                       {(p.bairro || p.endereco) && (
