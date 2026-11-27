@@ -62,7 +62,7 @@ A planilha pode ser editada no Google Sheets ou no Excel e exportada como **CSV 
 | `nota_google`, `total_avaliacoes` | não | Avaliação no Google Maps (ex.: `4.7` e `820`) |
 | `fonte`, `verificado_em` | não | Origem da informação e data da última conferência |
 
-**Avaliações do Google:** o roteiro exibe a nota e um link que direciona para a página do local no Google Maps (onde é possível consultar os comentários com acesso à internet). Os textos das avaliações não são armazenados na base local, em conformidade com os termos do Google.
+**Avaliações:** quando preenchidas na planilha, o roteiro exibe apenas a nota e a quantidade de avaliações, sem armazenar comentários nem vincular a links externos do Google Maps.
 
 ---
 

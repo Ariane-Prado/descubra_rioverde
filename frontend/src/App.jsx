@@ -176,10 +176,6 @@ export default function App() {
   )
 }
 
-function linkGoogle(p) {
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.nome} Rio Verde GO`)}`
-}
-
 function Resultado({ resposta, perfil, dia, setDia, voltar }) {
   const { roteiro } = resposta
   const dias = [...new Set(roteiro.blocos.map((b) => b.dia))]
@@ -239,11 +235,13 @@ function Resultado({ resposta, perfil, dia, setDia, voltar }) {
                       {p.acesso === 'carro' && (
                         <span className="carro"><Icone nome="carro" tamanho={16} />{p.acesso_texto}</span>
                       )}
-                      <a href={linkGoogle(p)} target="_blank" rel="noreferrer">
-                        {p.nota_google != null
-                          ? <><Icone nome="estrela" tamanho={15} preenchido />{p.nota_google.toLocaleString('pt-BR')}{p.total_avaliacoes ? ` (${p.total_avaliacoes.toLocaleString('pt-BR')})` : ''} no Google</>
-                          : <><Icone nome="externo" tamanho={15} />Ver no Google</>}
-                      </a>
+                      {p.nota_google != null && (
+                        <span className="nota">
+                          <Icone nome="estrela" tamanho={15} preenchido />
+                          {p.nota_google.toLocaleString('pt-BR')}
+                          {p.total_avaliacoes ? ` (${p.total_avaliacoes.toLocaleString('pt-BR')} avaliações)` : ''}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </article>

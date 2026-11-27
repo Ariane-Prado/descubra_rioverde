@@ -96,9 +96,8 @@ textarea:focus, .outro:focus-within { border-color: var(--verde); outline: none;
 .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 9px; font-size: 13.5px; color: var(--cinza); }
 .meta > * { display: inline-flex; align-items: center; gap: 5px; }
 .meta .carro { color: #B4570F; font-weight: 600; }
-.meta a { color: var(--verde); text-decoration: none; font-weight: 600; }
-.meta a:hover { text-decoration: underline; }
-.meta a svg { color: var(--abobora); }
+.meta .nota { color: var(--tinta); font-weight: 600; }
+.meta .nota svg { color: var(--abobora); }
 .trajeto { display: flex; align-items: center; gap: 10px; padding-left: 86px; font-size: 13px; color: var(--cinza); height: 22px; }
 .trajeto::before { content: ""; width: 1.5px; height: 22px; background: repeating-linear-gradient(var(--cinza) 0 3px, transparent 3px 6px); }
 .dica { margin-top: 28px; background: var(--fundo); border-radius: 14px; padding: 16px 20px; display: flex; gap: 12px; font-size: 14px; line-height: 1.45; color: #3A3A3F; }
