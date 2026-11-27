@@ -105,7 +105,7 @@ export default function App() {
         </div>
       </aside>
 
-      <main className="conteudo">
+      <main className="conteudo formulario">
         <form onSubmit={montar}>
           <h2>Monte o seu roteiro</h2>
           <p className="ajuda">Escolha o que não pode faltar. Pode marcar vários.</p>
@@ -128,13 +128,18 @@ export default function App() {
           )}
 
           <hr />
-          <p className="rotulo"><b>Quantos dias?</b></p>
-          <Segmentado rotulo="Quantos dias" opcoes={[[1, '1 dia'], [2, '2 dias'], [3, '3 dias']]} valor={perfil.dias} aoMudar={(v) => mudar('dias', v)} />
+          <div className="duas">
+            <div>
+              <p className="rotulo"><b>Quantos dias?</b></p>
+              <Segmentado rotulo="Quantos dias" opcoes={[[1, '1 dia'], [2, '2 dias'], [3, '3 dias']]} valor={perfil.dias} aoMudar={(v) => mudar('dias', v)} />
+            </div>
+            <div>
+              <p className="rotulo"><b>Que dia você vai?</b><span>confere o que estará aberto</span></p>
+              <Segmentado rotulo="Dia da semana" opcoes={DIAS} valor={perfil.dia_semana} aoMudar={(v) => mudar('dia_semana', v)} />
+            </div>
+          </div>
 
-          <p className="rotulo"><b>Que dia você vai?</b><span>usamos para conferir o que estará aberto</span></p>
-          <Segmentado rotulo="Dia da semana" opcoes={DIAS} valor={perfil.dia_semana} aoMudar={(v) => mudar('dia_semana', v)} />
-
-          <p className="rotulo"><b>Em quais períodos?</b><span>pode marcar mais de um</span></p>
+          <p className="rotulo rotulo-espaco"><b>Em quais períodos?</b><span>pode marcar mais de um</span></p>
           <div className="periodos" role="group" aria-label="Períodos">
             {PERIODOS.map((p) => {
               const on = perfil.periodos.includes(p.id)
@@ -148,7 +153,7 @@ export default function App() {
 
           <hr />
           <label className="rotulo" htmlFor="pedido"><b>Algum pedido especial?</b><span>opcional</span></label>
-          <textarea id="pedido" rows="3" value={perfil.observacoes} onChange={(e) => mudar('observacoes', e.target.value)}
+          <textarea id="pedido" rows="2" value={perfil.observacoes} onChange={(e) => mudar('observacoes', e.target.value)}
             placeholder="Ex.: vou com crianças, sou vegetariano, prefiro lugares com sombra…" />
 
           {erro && <p className="erro" role="alert">{erro}</p>}
