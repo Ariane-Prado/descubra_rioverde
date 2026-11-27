@@ -63,7 +63,6 @@ class Parada(BaseModel):
     motivo: str = ""
     nota_google: Optional[float] = None
     total_avaliacoes: Optional[int] = None
-    link_google_maps: str = ""
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     utilidade: dict = Field(default_factory=dict, description="Nota da função de utilidade e de cada critério")

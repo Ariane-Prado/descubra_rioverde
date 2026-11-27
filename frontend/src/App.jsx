@@ -172,7 +172,7 @@ export default function App() {
 }
 
 function linkGoogle(p) {
-  return p.link_google_maps || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.nome} Rio Verde GO`)}`
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${p.nome} Rio Verde GO`)}`
 }
 
 function Resultado({ resposta, perfil, dia, setDia, voltar }) {

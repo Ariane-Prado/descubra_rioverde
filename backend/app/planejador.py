@@ -176,7 +176,7 @@ def _parada(r: dict, ordem: int, chegada: int, saida: int, desloc: int, desloc_t
         deslocamento_min=desloc, deslocamento_texto=desloc_txt,
         refeicao=refeicao, acesso=r["acesso"], acesso_texto=r["acesso_texto"],
         distancia_centro_km=r["distancia_centro_km"], motivo=motivo,
-        nota_google=r["nota_google"], total_avaliacoes=r["total_avaliacoes"], link_google_maps=r["link_google_maps"],
+        nota_google=r["nota_google"], total_avaliacoes=r["total_avaliacoes"],
         latitude=r["latitude"], longitude=r["longitude"], utilidade=util or {},
     )
 

@@ -25,7 +25,7 @@ CAMINHO_PADRAO = Path(__file__).resolve().parent.parent / "dados" / "atrativos.c
 OBRIGATORIAS = ["id", "nome", "categoria", "descricao", "latitude", "longitude", "horario_abertura",
                 "horario_fechamento", "dias_funcionamento", "duracao_visita_min"]
 OPCIONAIS = ["endereco", "bairro", "tags", "precisa_carro", "serve_refeicao", "nota_google",
-             "total_avaliacoes", "link_google_maps", "fonte", "verificado_em"]
+             "total_avaliacoes", "fonte", "verificado_em"]
 
 DIAS = ["seg", "ter", "qua", "qui", "sex", "sab", "dom"]
 

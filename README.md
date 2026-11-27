@@ -60,7 +60,6 @@ A planilha pode ser editada no Google Sheets ou no Excel e exportada como **CSV 
 | `precisa_carro` | não | `sim` para forçar a indicação. Se vazio, o sistema calcula pela distância até o centro (> 8 km indica necessidade de carro) |
 | `serve_refeicao` | não | `almoco` ou `jantar` (evita sugerir outro restaurante em seguida quando o local já oferece refeição) |
 | `nota_google`, `total_avaliacoes` | não | Avaliação no Google Maps (ex.: `4.7` e `820`) |
-| `link_google_maps` | não | Link direto do Google Maps. Quando vazio, o botão "Ver no Google" realiza uma busca pelo nome |
 | `fonte`, `verificado_em` | não | Origem da informação e data da última conferência |
 
 **Avaliações do Google:** o roteiro exibe a nota e um link que direciona para a página do local no Google Maps (onde é possível consultar os comentários com acesso à internet). Os textos das avaliações não são armazenados na base local, em conformidade com os termos do Google.
