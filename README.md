@@ -1,158 +1,160 @@
 # Descubra Rio Verde
 
-Plataforma web que monta roteiros turísticos personalizados para Rio Verde (GO) com agentes de IA.
-A IA principal é o **Gemini**, que usa internet. Para internet baixa, há uma **contingência que roda no próprio notebook**.
+Plataforma web que monta roteiros turísticos personalizados para Rio Verde (GO) utilizando agentes de IA.
+O modelo principal é o **Gemini** (online), com **contingência local via Ollama (Llama)** e fallback baseado em regras para garantir o funcionamento mesmo com conexão instável ou offline.
 
 ---
 
-## Preparação (uma vez, em casa, COM internet)
+## Pré-requisitos e instalação
 
-1. Instale o **Python 3.11 ou mais novo**: https://www.python.org/downloads/
-   No Windows, marque **"Add python.exe to PATH"** durante a instalação.
+1. Instale o **Python 3.11 ou superior**: https://www.python.org/downloads/
+   - No Windows, marque a opção **"Add python.exe to PATH"** durante a instalação.
 2. Instale o **Ollama**: https://ollama.com/download
 3. Crie uma chave gratuita do Gemini em https://aistudio.google.com/apikey
-4. Dê dois cliques em **`1-instalar.bat`** (no Linux ou Mac: `bash 1-instalar.sh`).
-   Ele instala tudo, pede a chave do Gemini, baixa a IA de contingência (Llama, cerca de 2 GB) e testa o sistema.
-5. Preencha a planilha `backend/dados/atrativos.csv` (veja abaixo).
-6. **Ensaio:** abra o `2-iniciar.bat` e gere roteiros com internet. Depois desligue o Wi-Fi e gere de novo.
+4. Execute **`1-instalar.bat`** (no Linux ou macOS: `bash 1-instalar.sh`).
+   - O script cria o ambiente virtual, instala as dependências, configura o arquivo `.env` com a chave do Gemini, baixa o modelo local de contingência (`llama3.2:3b`, ~2 GB) e valida o sistema.
+5. Ajuste ou complemente a base de atrativos em `backend/dados/atrativos.csv`, se desejar.
 
-## No dia da apresentação
+## Como executar
 
-1. Dê dois cliques em **`2-iniciar.bat`**. O navegador abre em **http://localhost:8000**.
-2. **Não feche a janela preta**: ela é o servidor.
-3. Deixe o notebook **ligado na tomada**, porque na bateria a placa de vídeo fica mais lenta.
+1. Execute **`2-iniciar.bat`** (no Linux ou macOS: `bash 2-iniciar.sh`). O navegador abrirá automaticamente em **http://localhost:8000**.
+2. Mantenha o terminal aberto enquanto a aplicação estiver em uso (ele executa o servidor).
 
-### Contingência para internet baixa (automática)
+> **Dica de desempenho:** ao rodar o modelo local (Llama) em notebook, manter o equipamento conectado à energia evita redução de desempenho da GPU/CPU.
 
-| Situação | O que o sistema faz |
+### Modos de operação e contingência offline
+
+O sistema alterna automaticamente conforme a disponibilidade da conexão:
+
+| Situação | Comportamento do sistema |
 |---|---|
-| Internet boa | Agentes com o **Gemini** |
-| Internet lenta ou caída (o sistema testa a conexão em 2 s) | Se as mesmas escolhas já foram feitas antes, responde na hora pelo **cache** |
-| Sem cache | Agentes com a **Llama**, rodando no notebook, sem internet |
-| Llama indisponível | **Plano B por regras**, sem IA, usando a mesma planilha |
+| Internet disponível | Agentes executados com o **Gemini** |
+| Internet lenta ou indisponível (verificação em 2 s) | Se uma combinação equivalente já foi gerada antes, responde imediatamente pelo **cache** |
+| Sem internet e sem cache | Agentes executados localmente com **Llama (Ollama)** |
+| Ollama indisponível | **Plano B por regras**, sem LLM, utilizando a mesma base de atrativos |
 
-Em "Opções da apresentação", embaixo do formulário, dá para forçar um modo específico.
-No resultado, "Ver como o roteiro foi montado" mostra qual IA foi usada e o raciocínio de cada agente.
-
-**Dica:** no ensaio, com internet boa, gere as combinações mais prováveis de serem pedidas. Elas ficam no cache e saem na hora no Workshop.
+Na interface, a seção **"Opções da apresentação"** (abaixo do formulário) permite forçar um modo específico manualmente. No resultado, **"Ver como o roteiro foi montado"** exibe qual motor foi utilizado, o raciocínio de cada agente e as pontuações atribuídas.
 
 ---
 
-## A planilha (`backend/dados/atrativos.csv`)
+## Base de atrativos (`backend/dados/atrativos.csv`)
 
-Editem no Google Sheets ou no Excel e salvem como **CSV UTF-8, separado por vírgula**, mantendo os nomes das colunas.
-Depois de editar, feche e abra o `2-iniciar` de novo.
+A planilha pode ser editada no Google Sheets ou no Excel e exportada como **CSV UTF-8 (separado por vírgula)**, mantendo exatamente os nomes das colunas. Após qualquer alteração, reinicie o servidor.
 
-- Lugares sem latitude, longitude ou horário são **ignorados**, e a janela preta mostra a lista deles.
-- As linhas `[EXEMPLO]` são fictícias e servem só para testar. Apaguem quando os lugares reais estiverem completos.
-- Para roteiros de 3 dias sem repetir lugares, o ideal é ter **40 a 50 lugares**.
+- Registros sem latitude, longitude ou horário de funcionamento são **ignorados** (o log do servidor lista eventuais registros descartados).
+- Linhas marcadas com `[EXEMPLO]` são dados fictícios para teste e podem ser removidas conforme os locais reais forem cadastrados.
+- Para montar roteiros de 3 dias sem repetição de locais, recomenda-se manter entre **40 e 50 atrativos** cadastrados.
 
-| Coluna | Obrigatória | Como preencher |
+| Coluna | Obrigatória | Descrição e formato |
 |---|---|---|
-| id | sim | número único: 001, 002… |
-| nome | sim | Domah |
-| categoria | sim | uma destas: `gastronomia`, `barzinho`, `pesca`, `cachoeiras`, `parques`, `historia`, `cafes`, `compras`, `jantar`, `esporte`, `vida_noturna` |
-| descricao | sim | 1 frase. **É o que a busca e a IA leem**: capriche. |
-| latitude, longitude | sim | No Google Maps: botão direito no lugar e clique nos números (ex.: -17.7923 e -50.9192) |
-| dias_funcionamento | sim | `todos os dias`, `ter a dom`, `qui a sab`, `sex,sab` |
-| horario_abertura, horario_fechamento | sim | `07:00` e `17:00`. Se fecha depois da meia-noite: `21:00` e `02:00` |
-| duracao_visita_min | sim | tempo médio no lugar, em minutos |
-| endereco, bairro | não | Rua X, 123 · Centro |
-| tags | não | palavras-chave: `pôr do sol`, `crianças`, `música ao vivo`… Use **"pôr do sol"** nos lugares bons para o pôr do sol: eles vão para o fim da tarde |
-| precisa_carro | não | `sim` para forçar. Vazio: o sistema decide pela distância do centro (mais de 8 km = precisa de carro) |
-| serve_refeicao | não | `almoco` ou `jantar`. Ex.: pesque-pague que serve almoço, para o sistema não sugerir outro restaurante na sequência |
-| nota_google, total_avaliacoes | não | copiados do Google Maps, ex.: `4.7` e `820` |
-| link_google_maps | não | No Google Maps: Compartilhar → Copiar link. Sem link, o botão "Ver no Google" faz uma busca pelo nome |
-| fonte, verificado_em | não | onde conferiram e quando |
+| `id` | sim | Identificador único: `001`, `002`… |
+| `nome` | sim | Nome do local (ex.: `Domah`) |
+| `categoria` | sim | Uma das opções: `gastronomia`, `barzinho`, `pesca`, `cachoeiras`, `parques`, `historia`, `cafes`, `compras`, `jantar`, `esporte`, `vida_noturna` |
+| `descricao` | sim | Breve descrição (1 frase). É utilizada tanto na busca semântica quanto pelos agentes de IA |
+| `latitude`, `longitude` | sim | Coordenadas obtidas no Google Maps (ex.: `-17.7923` e `-50.9192`) |
+| `dias_funcionamento` | sim | Ex.: `todos os dias`, `ter a dom`, `qui a sab`, `sex,sab` |
+| `horario_abertura`, `horario_fechamento` | sim | Formato 24h (ex.: `07:00` e `17:00`; quando fecha após a meia-noite: `21:00` e `02:00`) |
+| `duracao_visita_min` | sim | Duração média estimada da visita, em minutos |
+| `endereco`, `bairro` | não | Ex.: `Rua X, 123 · Centro` |
+| `tags` | não | Palavras-chave separadas por vírgula (`pôr do sol`, `crianças`, `música ao vivo`…). Locais com a tag **`pôr do sol`** são priorizados no fim da tarde |
+| `precisa_carro` | não | `sim` para forçar a indicação. Se vazio, o sistema calcula pela distância até o centro (> 8 km indica necessidade de carro) |
+| `serve_refeicao` | não | `almoco` ou `jantar` (evita sugerir outro restaurante em seguida quando o local já oferece refeição) |
+| `nota_google`, `total_avaliacoes` | não | Avaliação no Google Maps (ex.: `4.7` e `820`) |
+| `link_google_maps` | não | Link direto do Google Maps. Quando vazio, o botão "Ver no Google" realiza uma busca pelo nome |
+| `fonte`, `verificado_em` | não | Origem da informação e data da última conferência |
 
-**Avaliações do Google:** o roteiro mostra a nota e um botão que abre a página do lugar no Google Maps, com os comentários (o clique precisa de internet). Os textos dos comentários **não** são copiados para a planilha, porque os termos do Google não permitem armazenar esse conteúdo.
-
----
-
-## Como funciona (ligação com os slides)
-
-Seguindo o slide "Arquitetura de um Agente" (Aula 5):
-
-| Slide | No sistema |
-|---|---|
-| User Prompt | O formulário (interesses, dias, dia da semana, períodos, pedido especial) |
-| Prompt base (System Prompt) | A persona e as instruções de cada agente (`backend/app/agentes.py`) |
-| Agentes | **CrewAI** com 3 agentes: Pesquisador → Planejador → Verificador (Chain-of-Verification) |
-| Memória | Cada agente recebe o resultado do anterior, e o cache guarda os roteiros já gerados |
-| Tools | Funções do sistema: busca na base, cálculo de trajetos e encaixe nos horários de funcionamento |
-| Base de Conhecimento / Dados | A planilha de atrativos, vetorizada (TF-IDF) e consultada por similaridade: o **RAG** |
-| Modelos (slide "A Base") | **Gemini** como principal; **Llama** (open source) como contingência offline |
-
-Seguindo o slide "Tipos de Agentes de IA" (Aula 5):
-
-| Tipo de agente | No sistema |
-|---|---|
-| **Baseado em Utilidade** | O Pesquisador e a **função de utilidade** (`planejador.py`): cada lugar recebe uma nota de 0 a 100 = afinidade com o perfil (50%) + avaliação no Google (25%) + proximidade (25%). Escolhe o lugar com a maior nota, como num sistema de recomendação |
-| **Baseado em Objetivos** | O Planejador: o objetivo é preencher os dias e períodos escolhidos, e ele planeja a sequência de paradas com um modelo do "mundo" (horários de funcionamento, distâncias), como um GPS |
-| **Reativo com Estado** | O cache: lembra os roteiros já gerados e responde direto quando as mesmas escolhas se repetem |
-| **Reativo Simples** | O plano B: regras "SE está aberto E cabe no tempo ENTÃO inclui" |
-
-As notas da função de utilidade aparecem no resultado, em "Ver como o roteiro foi montado".
-
-Técnicas de prompt (Aulas 2 e 2b): persona, delimitadores `###`, divisão de tarefas, few-shot e Chain-of-Verification.
-**Segurança contra alucinação:** o código só aceita lugares que existem na planilha e que estão abertos no dia e no horário.
+**Avaliações do Google:** o roteiro exibe a nota e um link que direciona para a página do local no Google Maps (onde é possível consultar os comentários com acesso à internet). Os textos das avaliações não são armazenados na base local, em conformidade com os termos do Google.
 
 ---
 
-## Rodar pelo terminal (sem os arquivos .bat)
+## Arquitetura e funcionamento
 
-Os comandos abaixo são para o **PowerShell** do Windows. No Linux ou Mac, troque `.venv\Scripts\` por `.venv/bin/`.
+### Estrutura dos agentes
 
-**Instalação (uma vez, com internet), dentro da pasta do projeto:**
+| Componente | Implementação no sistema |
+|---|---|
+| **Entrada do usuário (User Prompt)** | Formulário com interesses, quantidade de dias, dia da semana, períodos e observações adicionais |
+| **Instruções base (System Prompt)** | Persona, regras e formato de saída definidos para cada agente em `backend/app/agentes.py` |
+| **Orquestração multiagente** | **CrewAI** com 3 agentes em sequência: **Pesquisador → Planejador → Verificador** (Chain-of-Verification) |
+| **Memória** | Passagem de contexto entre os agentes na execução e cache persistente de roteiros já gerados |
+| **Ferramentas (Tools)** | Funções determinísticas para consulta na base, cálculo de distâncias/trajetos e encaixe nos horários de funcionamento |
+| **Base de Conhecimento (RAG)** | Planilha de atrativos vetorizada com **TF-IDF** e consultada por similaridade |
+| **Modelos de linguagem** | **Gemini** como modelo principal e **Llama** (open source, via Ollama) como contingência offline |
+
+### Abordagens de agentes aplicadas
+
+| Tipo de agente | Papel no sistema |
+|---|---|
+| **Baseado em Utilidade** | O Pesquisador e a função de utilidade (`backend/app/planejador.py`) atribuem uma nota de 0 a 100 a cada local: **afinidade com o perfil (50%) + avaliação no Google (25%) + proximidade (25%)**, priorizando os candidatos mais bem pontuados |
+| **Baseado em Objetivos** | O Planejador organiza as paradas para preencher os dias e períodos selecionados respeitando horários de funcionamento e deslocamentos |
+| **Reativo com Estado** | O cache identifica combinações já solicitadas e retorna o roteiro correspondente de imediato |
+| **Reativo Simples** | O plano B por regras seleciona atrativos com lógica determinística (horário aberto + encaixe no tempo disponível) |
+
+As pontuações da função de utilidade podem ser inspecionadas diretamente no resultado em **"Ver como o roteiro foi montado"**.
+
+### Engenharia de prompt e controle de alucinações
+
+Os prompts combinam definição de persona, delimitadores estruturais (`###`), decomposição de tarefas, exemplos (*few-shot*) e verificação em cadeia (*Chain-of-Verification*). Além disso, uma camada de validação determinística garante que o roteiro final só aceite locais efetivamente cadastrados na planilha e abertos no dia e horário previstos.
+
+---
+
+## Execução manual pelo terminal
+
+Os comandos abaixo utilizam **PowerShell** no Windows. No Linux ou macOS, substitua `.venv\Scripts\` por `.venv/bin/`.
+
+**Instalação (primeira execução, na pasta raiz do projeto):**
 
 ```powershell
 cd backend
 python -m venv .venv
 .venv\Scripts\python -m pip install -r requirements.txt
-copy .env.example .env          # depois abra o .env e cole a chave em GEMINI_API_KEY=
-ollama pull llama3.2:3b         # IA de contingência (cerca de 2 GB)
+copy .env.example .env          # abra o .env e preencha GEMINI_API_KEY=
+ollama pull llama3.2:3b         # modelo local de contingência (~2 GB)
 ```
 
-**Ligar o servidor (toda vez):**
+**Iniciar o servidor:**
 
 ```powershell
 cd backend
 .venv\Scripts\python -m uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-Abra **http://localhost:8000** no navegador. Para desligar, aperte **Ctrl + C** no terminal.
+Acesse **http://localhost:8000** no navegador. Para encerrar o servidor, pressione **Ctrl + C**.
 
-O Ollama normalmente já fica ligado sozinho depois de instalado (ícone perto do relógio). Se não estiver, abra **outro terminal** e rode `ollama serve` antes de ligar o servidor. Se aparecer um erro dizendo que a porta já está em uso, é porque ele já estava ligado.
+O Ollama costuma iniciar automaticamente após a instalação. Caso não esteja ativo, execute `ollama serve` em outro terminal antes de iniciar o backend.
 
-**Comandos úteis:**
+**Comandos úteis (dentro de `backend/`):**
 
-| Para quê | Comando (dentro de `backend`) |
+| Finalidade | Comando |
 |---|---|
-| Ligar e recarregar sozinho ao salvar o código | `.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000` |
-| Rodar os testes | `.venv\Scripts\python -m pytest -q` |
-| Ver se a IA local está pronta | abrir http://localhost:8000/api/saude |
-| Ver os modelos baixados no Ollama | `ollama list` |
+| Executar com reload automático | `.venv\Scripts\python -m uvicorn app.main:app --reload --port 8000` |
+| Executar os testes | `.venv\Scripts\python -m pytest -q` |
+| Verificar status do backend e da IA local | Acessar `http://localhost:8000/api/saude` |
+| Listar modelos instalados no Ollama | `ollama list` |
 
-Se preferir **ativar o ambiente** para digitar só `python`, `uvicorn` e `pytest`:
+Para ativar o ambiente virtual diretamente no PowerShell:
 
 ```powershell
-.venv\Scripts\Activate.ps1      # se o Windows bloquear: Set-ExecutionPolicy -Scope Process Bypass
+.venv\Scripts\Activate.ps1      # se houver bloqueio de política: Set-ExecutionPolicy -Scope Process Bypass
 uvicorn app.main:app --host 0.0.0.0 --port 8000
 ```
 
-**Mexer na tela (precisa do Node.js):**
+**Desenvolvimento do frontend (requer Node.js):**
 
 ```powershell
 cd frontend
 npm install
-npm run dev       # abre em http://localhost:5173 e atualiza ao salvar (o servidor da porta 8000 precisa estar ligado)
-npm run build     # gera a versão final em frontend/dist, que o servidor da porta 8000 mostra
+npm run dev       # servidor de desenvolvimento em http://localhost:5173 (requer o backend na porta 8000)
+npm run build     # gera o build de produção em frontend/dist, servido diretamente pelo backend
 ```
 
 ---
 
-## Para quem for mexer no código
+## Estrutura do projeto
 
-- `backend/app/agentes.py`: agentes e prompts. `planejador.py`: encaixe nos dias e horários e plano B. `base_conhecimento.py`: planilha e busca (RAG). `main.py`: rotas e contingência.
-- Tela: `frontend/src/App.jsx`. A versão compilada vem em `frontend/dist`. Para alterar: `cd frontend && npm install && npm run build` (precisa do Node.js).
-- Testes: `cd backend && .venv\Scripts\python -m pytest`
+- `backend/app/agentes.py` — definição dos agentes (CrewAI) e prompts.
+- `backend/app/planejador.py` — função de utilidade, encaixe de horários/dias e plano B por regras.
+- `backend/app/base_conhecimento.py` — leitura do CSV e busca por similaridade (TF-IDF / RAG).
+- `backend/app/main.py` — API FastAPI, cache e lógica de contingência.
+- `backend/tests/test_api.py` — testes automatizados da API (`pytest`).
+- `frontend/src/App.jsx` — interface React (build compilado em `frontend/dist`).
